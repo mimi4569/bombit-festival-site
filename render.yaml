@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: vibe-exhibition-api
+    runtime: node
+    repo: https://github.com/mimi4569/bombit-festival-site
+    branch: main
+    rootDir: server
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: yes
+    envVars:
+      - key: SUPABASE_URL
+        value: https://sksvygodhnlcrznfuklr.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
