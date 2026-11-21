@@ -8,8 +8,8 @@
   const API_BASE = (() => {
     const stored = localStorage.getItem("vibe_api_base");
     if (stored) return stored.replace(/\/$/, "");
-    // 배포된 정적 사이트가 같은 도메인의 /api를 쓴다고 가정하지 않음 — 명시적 URL 필요
-    return "http://localhost:8080";
+    // 배포된 Render 백엔드
+    return "https://vibe-exhibition-api.onrender.com";
   })();
 
   // ===== 상태 =====
