@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake Game</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --grid: #1f2937;
+      --snake: #22c55e;
+      --snake-head: #4ade80;
+      --food: #ef4444;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1e293b, var(--bg));
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .game-container {
+      position: relative;
+      text-align: center;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+    h1 { margin: 0 0 12px; font-size: 28px; letter-spacing: 0.5px; }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: var(--muted);
+    }
+    .hud strong { color: var(--text); }
+    canvas {
+      display: block;
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      image-rendering: pixelated;
+    }
+    .controls { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 23, 0.75);
+      border-radius: 16px;
+    }
+    .overlay.hidden { display: none; }
+    .overlay-content {
+      padding: 24px 32px;
+      background: var(--panel);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      min-width: 240px;
+    }
+    .overlay-content h2 { margin: 0 0 8px; }
+    .overlay-content p { margin: 0 0 16px; color: var(--muted); }
+    button {
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: #082f49;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    button:hover { filter: brightness(1.1); }
+    button:focus-visible { outline: 2px solid #e0f2fe; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main class="game-container">
+    <h1>Snake Game</h1>
+    <div class="hud">
+      <span>점수: <strong id="score">0</strong></span>
+      <span>최고 점수: <strong id="high-score">0</strong></span>
+    </div>
+    <canvas id="game" width="400" height="400" aria-label="Snake game board" role="img"></canvas>
+    <p class="controls">방향키 또는 WASD로 이동 · 스페이스바/Enter로 재시작</p>
+    <div id="overlay" class="overlay hidden">
+      <div class="overlay-content">
+        <h2 id="overlay-title">게임 오버</h2>
+        <p id="overlay-score"></p>
+        <button id="restart-btn" type="button">다시 시작</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      const scoreEl = document.getElementById("score");
+      const highScoreEl = document.getElementById("high-score");
+      const overlay = document.getElementById("overlay");
+      const overlayTitle = document.getElementById("overlay-title");
+      const overlayScore = document.getElementById("overlay-score");
+      const restartBtn = document.getElementById("restart-btn");
+
+      const TILE_SIZE = 20;
+      const COLS = canvas.width / TILE_SIZE;
+      const ROWS = canvas.height / TILE_SIZE;
+      const TICK_MS = 120;
+
+      let snake;
+      let direction;
+      let nextDirection;
+      let food;
+      let score;
+      let highScore = 0;
+      let gameOver = false;
+
+      function resetGame() {
+        const startX = Math.floor(COLS / 2);
+        const startY = Math.floor(ROWS / 2);
+        snake = [
+          { x: startX, y: startY },
+          { x: startX - 1, y: startY },
+          { x: startX - 2, y: startY },
+        ];
+        direction = { x: 1, y: 0 };
+        nextDirection = { x: 1, y: 0 };
+        score = 0;
+        gameOver = false;
+        scoreEl.textContent = String(score);
+        overlay.classList.add("hidden");
+        placeFood();
+        draw();
+      }
+
+      function placeFood() {
+        while (true) {
+          const candidate = {
+            x: Math.floor(Math.random() * COLS),
+            y: Math.floor(Math.random() * ROWS),
+          };
+          const onSnake = snake.some(
+            (seg) => seg.x === candidate.x && seg.y === candidate.y
+          );
+          if (!onSnake) {
+            food = candidate;
+            return;
+          }
+        }
+      }
+
+      function setDirection(x, y) {
+        if (x === -direction.x && y === -direction.y) return;
+        nextDirection = { x, y };
+      }
+
+      function update() {
+        if (gameOver) return;
+
+        direction = nextDirection;
+        const head = snake[0];
+        const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+
+        if (newHead.x < 0 || newHead.x >= COLS || newHead.y < 0 || newHead.y >= ROWS) {
+          endGame();
+          return;
+        }
+
+        const willEat = newHead.x === food.x && newHead.y === food.y;
+        const bodyToCheck = willEat ? snake : snake.slice(0, -1);
+        if (bodyToCheck.some((seg) => seg.x === newHead.x && seg.y === newHead.y)) {
+          endGame();
+          return;
+        }
+
+        snake.unshift(newHead);
+
+        if (willEat) {
+          score += 1;
+          scoreEl.textContent = String(score);
+          if (score > highScore) {
+            highScore = score;
+            highScoreEl.textContent = String(highScore);
+          }
+          placeFood();
+        } else {
+          snake.pop();
+        }
+      }
+
+      function endGame() {
+        gameOver = true;
+        overlayTitle.textContent = "게임 오버";
+        overlayScore.textContent = `최종 점수: ${score}`;
+        overlay.classList.remove("hidden");
+      }
+
+      function drawGrid() {
+        ctx.strokeStyle = "#111827";
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= COLS; x++) {
+          ctx.beginPath();
+          ctx.moveTo(x * TILE_SIZE, 0);
+          ctx.lineTo(x * TILE_SIZE, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= ROWS; y++) {
+          ctx.beginPath();
+          ctx.moveTo(0, y * TILE_SIZE);
+          ctx.lineTo(canvas.width, y * TILE_SIZE);
+          ctx.stroke();
+        }
+      }
+
+      function draw() {
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(
+          food.x * TILE_SIZE + TILE_SIZE / 2,
+          food.y * TILE_SIZE + TILE_SIZE / 2,
+          TILE_SIZE * 0.35,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+
+        snake.forEach((seg, index) => {
+          ctx.fillStyle = index === 0 ? "#4ade80" : "#22c55e";
+          const padding = index === 0 ? 1 : 2;
+          ctx.fillRect(
+            seg.x * TILE_SIZE + padding,
+            seg.y * TILE_SIZE + padding,
+            TILE_SIZE - padding * 2,
+            TILE_SIZE - padding * 2
+          );
+        });
+      }
+
+      function loop() {
+        update();
+        draw();
+      }
+
+      document.addEventListener("keydown", (e) => {
+        const key = e.key.toLowerCase();
+        if (key === "arrowup" || key === "w") { e.preventDefault(); setDirection(0, -1); }
+        else if (key === "arrowdown" || key === "s") { e.preventDefault(); setDirection(0, 1); }
+        else if (key === "arrowleft" || key === "a") { e.preventDefault(); setDirection(-1, 0); }
+        else if (key === "arrowright" || key === "d") { e.preventDefault(); setDirection(1, 0); }
+        else if ((key === " " || key === "enter") && gameOver) { e.preventDefault(); resetGame(); }
+      });
+
+      restartBtn.addEventListener("click", resetGame);
+
+      highScoreEl.textContent = String(highScore);
+      resetGame();
+      setInterval(loop, TICK_MS);
+    })();
+  </script>
+</body>
+</html>

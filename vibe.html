@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바이브코딩 전시 — 학생 작품 갤러리</title>
+  <meta name="description" content="학생들이 만든 바이브코딩 웹사이트 작품을 전시하고 평가하는 공간." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
+  <link rel="stylesheet" href="vibe.css" />
+</head>
+<body>
+  <a class="skip-link" href="#gallery">작품 목록으로 건너뛰기</a>
+
+  <header class="bar">
+    <div class="bar-inner">
+      <a class="brand" href="#top" aria-label="바이브코딩 전시 홈">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">VIBE<span class="brand-slash">/</span>전시</span>
+      </a>
+      <nav class="bar-nav" aria-label="사이트 메뉴">
+        <a href="#gallery">작품</a>
+        <a href="#about">소개</a>
+      </nav>
+      <button class="btn-accent" id="open-submit" type="button">작품 올리기</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="hero-kicker">Student Vibe Coding Exhibition</p>
+        <h1 class="hero-title">바이브코딩 <span class="hero-accent">전시</span></h1>
+        <p class="hero-lede">학생들이 만든 웹사이트를 한 벽에 걸었습니다. 작품을 열어 보고, 사이트를 직접 둘러보고, 평가를 남겨 주세요.</p>
+        <div class="hero-meta">
+          <span class="stat"><b id="stat-works">0</b> 작품</span>
+          <span class="stat"><b id="stat-reviews">0</b> 평가</span>
+          <span class="stat-live"><span class="live-dot" aria-hidden="true"></span>실시간 업데이트</span>
+        </div>
+        <div class="hero-cta">
+          <button class="btn-accent btn-lg" id="open-submit-hero" type="button">작품 올리기</button>
+          <a class="btn-ghost" href="#gallery">작품 둘러보기 ↓</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="gallery-section">
+      <div class="gallery-head">
+        <h2 class="section-title">전시 작품</h2>
+      </div>
+
+      <div class="split-layout">
+        <div class="works-list" id="works-grid" aria-live="polite"></div>
+        <aside class="detail-panel" id="detail-panel" aria-live="polite">
+          <div class="detail-empty" id="detail-empty">
+            <div class="detail-empty-icon" aria-hidden="true">←</div>
+            <p class="detail-empty-text">작품을 선택하면<br>여기에서 바로 볼 수 있어요.</p>
+          </div>
+        </aside>
+      </div>
+      <p class="empty" id="empty-state" hidden>아직 등록된 작품이 없습니다. 첫 작품을 올려 전시를 시작해 보세요.</p>
+    </section>
+
+    <section id="about" class="about">
+      <div class="about-inner">
+        <h2 class="section-title">이 전시는</h2>
+        <p class="about-text">바이브코딩 수업에서 학생들이 직접 기획하고 만든 웹사이트를 모았습니다. 코드 한 줄, 색 한 칸이 모여 하나의 작품이 됩니다. 작품을 클릭해 사이트를 직접 둘러보고, 별점과 짧은 평가로 작가에게 응원을 전해 주세요.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>바이브코딩 전시</span>
+      <span class="footer-dim">학생 작품 갤러리</span>
+    </div>
+  </footer>
+
+  <!-- 작품 등록 오버레이 -->
+  <div class="overlay" id="submit-overlay" role="dialog" aria-modal="true" aria-labelledby="submit-title" hidden>
+    <div class="overlay-shell overlay-shell--form">
+      <button class="overlay-close" id="submit-close" type="button" aria-label="닫기">✕</button>
+      <div class="overlay-body">
+        <h2 class="form-title" id="submit-title">작품 올리기</h2>
+        <p class="form-sub">아래 항목을 채워 작품을 전시에 등록하세요. 모두가 볼 수 있어요.</p>
+        <form id="submit-form" class="submit-form" novalidate>
+          <label class="field">
+            <span class="field-label">제목 <em>*</em></span>
+            <input name="title" type="text" required maxlength="80" placeholder="작품 제목" />
+          </label>
+          <label class="field">
+            <span class="field-label">제작자 이름 <em>*</em></span>
+            <input name="creator_name" type="text" required maxlength="60" placeholder="홍길동" />
+          </label>
+          <label class="field field--full">
+            <span class="field-label">설명</span>
+            <textarea name="description" rows="3" maxlength="500" placeholder="작품을 소개하는 짧은 설명"></textarea>
+          </label>
+          <label class="field">
+            <span class="field-label">사이트 주소</span>
+            <input name="site_url" type="url" maxlength="300" placeholder="https://…" />
+          </label>
+          <label class="field">
+            <span class="field-label">GitHub URL</span>
+            <input name="github_url" type="url" maxlength="300" placeholder="https://github.com/…" />
+          </label>
+          <label class="field">
+            <span class="field-label">전시 연도 <em>*</em></span>
+            <select name="exhibition_year" required id="year-select"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">학년 <em>*</em></span>
+            <select name="grade" required>
+              <option value="" selected>선택</option>
+              <option>1학년</option>
+              <option>2학년</option>
+              <option>3학년</option>
+              <option>4학년</option>
+              <option>5학년</option>
+              <option>6학년</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">구분 <em>*</em></span>
+            <select name="category" required>
+              <option value="" selected>선택</option>
+              <option>개인</option>
+              <option>팀</option>
+              <option>동아리</option>
+            </select>
+          </label>
+          <label class="field field--full">
+            <span class="field-label">썸네일 URL</span>
+            <input name="thumbnail_url" type="url" maxlength="500" placeholder="https://…/thumbnail.png" />
+            <span class="field-hint">썸네일이 없으면 자동으로 기본 표지가 표시됩니다.</span>
+          </label>
+          <label class="field field--full">
+            <span class="field-label">수정용 비밀번호 <em>*</em></span>
+            <input name="password" type="text" required maxlength="40" placeholder="나중에 작품을 수정할 때 필요합니다" />
+            <span class="field-hint">이 비밀번호로만 작품을 수정/삭제할 수 있습니다. 잘 기억해 주세요.</span>
+          </label>
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" id="submit-cancel">취소</button>
+            <button type="submit" class="btn-accent btn-lg" id="submit-send">전시에 등록</button>
+          </div>
+          <p class="form-status" id="submit-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- 전체 화면 사이트 미리보기 -->
+  <div class="stage-fullscreen" id="stage-fullscreen" hidden>
+    <div class="stage-fullscreen-bar">
+      <span class="stage-fullscreen-title" id="stage-fullscreen-title"></span>
+      <div class="stage-fullscreen-actions">
+        <a class="btn-ghost btn-dark" id="stage-fullscreen-open" href="#" target="_blank" rel="noopener noreferrer">새 창 ↗</a>
+        <button class="btn-ghost btn-dark" id="stage-fullscreen-close" type="button" aria-label="전체 화면 닫기">닫기 ✕</button>
+      </div>
+    </div>
+    <div class="stage-fullscreen-frame" id="stage-fullscreen-frame"></div>
+  </div>
+
+  <!-- 비밀번호 확인 모달 -->
+  <div class="overlay" id="pw-overlay" role="dialog" aria-modal="true" aria-labelledby="pw-title" hidden>
+    <div class="overlay-shell overlay-shell--form">
+      <button class="overlay-close" id="pw-close" type="button" aria-label="닫기">✕</button>
+      <div class="overlay-body">
+        <h2 class="form-title" id="pw-title">비밀번호 확인</h2>
+        <p class="form-sub">작품을 수정하려면 등록할 때 설정한 비밀번호를 입력해 주세요.</p>
+        <form id="pw-form" novalidate>
+          <label class="field" style="margin-bottom:16px">
+            <span class="field-label">비밀번호</span>
+            <input id="pw-input" name="password" type="password" required maxlength="40" placeholder="비밀번호 입력" autocomplete="off" />
+          </label>
+          <p class="form-status" id="pw-status" aria-live="polite"></p>
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" id="pw-cancel">취소</button>
+            <button type="submit" class="btn-accent btn-lg" id="pw-submit">확인</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 작품 수정 폼 모달 -->
+  <div class="overlay" id="edit-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-title" hidden>
+    <div class="overlay-shell overlay-shell--form">
+      <button class="overlay-close" id="edit-close" type="button" aria-label="닫기">✕</button>
+      <div class="overlay-body">
+        <h2 class="form-title" id="edit-title">작품 수정</h2>
+        <p class="form-sub">작품 정보를 수정합니다.</p>
+        <form id="edit-form" class="submit-form" novalidate>
+          <label class="field">
+            <span class="field-label">제목 <em>*</em></span>
+            <input name="title" type="text" required maxlength="80" placeholder="작품 제목" />
+          </label>
+          <label class="field">
+            <span class="field-label">제작자 이름 <em>*</em></span>
+            <input name="creator_name" type="text" required maxlength="60" placeholder="홍길동" />
+          </label>
+          <label class="field field--full">
+            <span class="field-label">설명</span>
+            <textarea name="description" rows="3" maxlength="500" placeholder="작품을 소개하는 짧은 설명"></textarea>
+          </label>
+          <label class="field">
+            <span class="field-label">사이트 주소</span>
+            <input name="site_url" type="url" maxlength="300" placeholder="https://…" />
+          </label>
+          <label class="field">
+            <span class="field-label">GitHub URL</span>
+            <input name="github_url" type="url" maxlength="300" placeholder="https://github.com/…" />
+          </label>
+          <label class="field">
+            <span class="field-label">전시 연도 <em>*</em></span>
+            <select name="exhibition_year" required id="edit-year-select"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">학년 <em>*</em></span>
+            <select name="grade" required>
+              <option value="">선택</option>
+              <option>1학년</option>
+              <option>2학년</option>
+              <option>3학년</option>
+              <option>4학년</option>
+              <option>5학년</option>
+              <option>6학년</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">구분 <em>*</em></span>
+            <select name="category" required>
+              <option value="">선택</option>
+              <option>개인</option>
+              <option>팀</option>
+              <option>동아리</option>
+            </select>
+          </label>
+          <label class="field field--full">
+            <span class="field-label">썸네일 URL</span>
+            <input name="thumbnail_url" type="url" maxlength="500" placeholder="https://…/thumbnail.png" />
+          </label>
+          <div class="form-actions">
+            <button type="button" class="btn-ghost btn-danger" id="edit-delete">작품 삭제</button>
+            <button type="button" class="btn-ghost" id="edit-cancel">취소</button>
+            <button type="submit" class="btn-accent btn-lg" id="edit-save">수정 저장</button>
+          </div>
+          <p class="form-status" id="edit-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="vibe.js"></script>
+</body>
+</html>
