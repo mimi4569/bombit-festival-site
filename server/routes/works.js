@@ -6,7 +6,7 @@ import { hashPassword, verifyPasswordAny } from "../lib/password.js";
 
 const router = Router();
 
-// 작품 목록 조회 (비밀번호 제외)
+// 작품 목록 조회 (비밀번호, html_content 제외 — 용량 절약)
 router.get("/", async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -14,19 +14,28 @@ router.get("/", async (req, res) => {
       .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,created_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
-    res.json({ works: data || [] });
+    // html_content 존재 여부 확인을 위해 각 작품 조회
+    const works = await Promise.all((data || []).map(async (w) => {
+      const { data: full } = await supabase
+        .from("works")
+        .select("html_content")
+        .eq("id", w.id)
+        .maybeSingle();
+      return { ...w, has_html: !!(full && full.html_content) };
+    }));
+    res.json({ works });
   } catch (e) {
     console.error("GET /works error:", e);
     res.status(500).json({ error: "작품을 불러오지 못했습니다.", message: e.message });
   }
 });
 
-// 단일 작품 조회 (비밀번호 제외)
+// 단일 작품 조회 (비밀번호 제외, html_content 포함)
 router.get("/:id", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("works")
-      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,created_at")
+      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,html_content,created_at")
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
@@ -52,7 +61,7 @@ router.post("/", async (req, res) => {
     const { data, error } = await supabase
       .from("works")
       .insert(row)
-      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,created_at")
+      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,html_content,created_at")
       .single();
     if (error) throw error;
 
@@ -89,7 +98,7 @@ router.put("/:id", async (req, res) => {
       .from("works")
       .update(clean)
       .eq("id", id)
-      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,created_at")
+      .select("id,title,creator_name,description,site_url,github_url,exhibition_year,grade,category,thumbnail_url,html_content,created_at")
       .single();
     if (error) throw error;
 
@@ -125,6 +134,27 @@ router.delete("/:id", async (req, res) => {
   } catch (e) {
     console.error("DELETE /works/:id error:", e);
     res.status(500).json({ error: "작품 삭제에 실패했습니다.", message: e.message });
+  }
+});
+
+// HTML 미리보기 — 작품에 저장된 html_content를 그대로 반환 (iframe srcdoc 용)
+router.get("/:id/preview-html", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("works")
+      .select("html_content,title")
+      .eq("id", req.params.id)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return res.status(404).send("작품을 찾을 수 없습니다.");
+    if (!data.html_content) return res.status(404).send("이 작품은 HTML 콘텐츠가 없습니다.");
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=60");
+    res.send(data.html_content);
+  } catch (e) {
+    console.error("GET /works/:id/preview-html error:", e);
+    res.status(500).send("미리보기를 불러오지 못했습니다.");
   }
 });
 

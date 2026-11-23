@@ -26,6 +26,10 @@ export function validateWork(data, { requirePassword = false } = {}) {
   const thumb = String(data.thumbnail_url || "").trim();
   if (thumb && !/^https?:\/\//i.test(thumb)) errors.push("썸네일 URL은 http(s):// 로 시작해야 합니다.");
 
+  // HTML 콘텐츠 (선택) — 너무 큰 파일 제한 (1MB)
+  const html_content = String(data.html_content || "").trim();
+  if (html_content.length > 1_000_000) errors.push("HTML 파일이 너무 큽니다. (1MB 이하)");
+
   return {
     errors,
     clean: {
@@ -38,6 +42,7 @@ export function validateWork(data, { requirePassword = false } = {}) {
       grade,
       category,
       thumbnail_url: thumb || null,
+      html_content: html_content || null,
     },
   };
 }

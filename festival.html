@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="별빛야시장 — 매년 가을밤, 강변을 따라 펼쳐지는 야시장 축제. 음식, 공예, 공연, 그리고 무수한 별빛." />
+  <title>별빛야시장 · 가을밤 축제</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Pretendard:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="festival.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+</head>
+<body>
+  <!-- 밤하늘 별빛 캔버스 -->
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <!-- 헤더 -->
+  <header class="site-header">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">✦</span>
+      <span class="brand-text">별빛야시장</span>
+    </a>
+    <nav class="site-nav" aria-label="주요 메뉴">
+      <a href="#about">소개</a>
+      <a href="#program">프로그램</a>
+      <a href="#booth">부스</a>
+      <a href="#visit">방문</a>
+    </nav>
+    <a class="header-cta" href="#visit">방문 안내</a>
+  </header>
+
+  <main id="top">
+    <!-- 히어로 -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <p class="hero-meta">제14회 가을밤 야시장 축제</p>
+        <h1 id="hero-title" class="hero-title">
+          밤이 오면,<br />
+          강가에 <em>별</em>이 내린다
+        </h1>
+        <p class="hero-lede">
+          매년 열흘, 강변을 따라 수백 개의 종이 등불이 켜집니다.
+          밤공기 속에 음식 냄새, 어쿠스틱 기타, 그리고 웃음소리가 섞이는 시간.
+        </p>
+        <div class="hero-when">
+          <div class="when-item">
+            <span class="when-label">기간</span>
+            <span class="when-value">10월 18일 — 27일</span>
+          </div>
+          <div class="when-divider" aria-hidden="true"></div>
+          <div class="when-item">
+            <span class="when-label">시간</span>
+            <span class="when-value">매일 저녁 6시 — 자정</span>
+          </div>
+          <div class="when-divider" aria-hidden="true"></div>
+          <div class="when-item">
+            <span class="when-label">장소</span>
+            <span class="when-value">한강 시민공원 · 을지로 부터</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#program">프로그램 보기</a>
+          <a class="btn btn-ghost" href="#visit">오시는 길</a>
+        </div>
+      </div>
+      <div class="hero-lantern" aria-hidden="true">
+        <div class="lantern lantern-1"></div>
+        <div class="lantern lantern-2"></div>
+        <div class="lantern lantern-3"></div>
+        <div class="lantern lantern-4"></div>
+        <div class="lantern lantern-5"></div>
+      </div>
+    </section>
+
+    <!-- 소개 -->
+    <section id="about" class="about" aria-labelledby="about-title">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2 id="about-title" class="section-title">밤의 시장을, 다시</h2>
+          <p>
+            전통 시장은 늘 낮에 열렸습니다. 이 축제는 그 시간을 뒤집습니다.
+            해가 지고 나면, 비로소 시장이 깨어납니다.
+          </p>
+          <p>
+            종이 등불 아래에서 만두를 빚고, 숯불 위에서 고기를 굽고,
+            작은 무대 위에서 누군가가 노래를 부릅니다. 모두가 손님인 동시에
+            주인입니다. 밤이 깊어질수록 시장은 더 느려지고, 더 따뜻해집니다.
+          </p>
+          <p class="about-aside">
+            입장료는 없습니다. 마음만 가지고 오세요.
+          </p>
+        </div>
+        <aside class="about-stats">
+          <div class="stat">
+            <span class="stat-num">320<span class="stat-unit">+</span></span>
+            <span class="stat-label">부스</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">10<span class="stat-unit">일</span></span>
+            <span class="stat-label">기간</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">80<span class="stat-unit">만</span></span>
+            <span class="stat-label">방문객</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">14<span class="stat-unit">년</span></span>
+            <span class="stat-label">역사</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 프로그램 타임라인 -->
+    <section id="program" class="program" aria-labelledby="program-title">
+      <header class="section-head">
+        <h2 id="program-title" class="section-title">하루의 밤, 일곱 장면</h2>
+        <p class="section-sub">저녁 6시 개장부터 자정 마감까지, 밤이 흐르는 대로</p>
+      </header>
+
+      <ol class="timeline">
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="50" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">18:00</span>
+            <span class="scene-tag">개장</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="170" data-aos-easing="ease-out-cubic" data-aos-once="true">점등식</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="290" data-aos-easing="ease-out-cubic" data-aos-once="true">강변 320개의 종이 등불이 한꺼번에 켜집니다. 작은 북소리와 함께 밤이 시작됩니다.</p>
+          </div>
+        </li>
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">19:30</span>
+            <span class="scene-tag">공연</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">어쿠스틱 난장</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">무명 밴드부터 30년 경력의 통기타 할아버지까지. 누구나 무대에 올라 한 곡을 부를 수 있습니다.</p>
+          </div>
+        </li>
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">20:00</span>
+            <span class="scene-tag">체험</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">등불 만들기</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">한지와 대나무로 내 손만의 등불을 만듭니다. 완성된 등불은 강 위에 띄워 보냅니다.</p>
+          </div>
+        </li>
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">21:00</span>
+            <span class="scene-tag">미식</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">밤상차림</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">꼬치, 호떡, 어묵탕, 떡볶이. 가장 길게 줄 서는 부스의 비밀은 "직접 굽는다"는 한 문장입니다.</p>
+          </div>
+        </li>
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">22:00</span>
+            <span class="scene-tag">공연</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">판소리 한 대</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">명창 한 분이 등을 밝히고 목을 틉니다. 밤이 깊을수록 소리가 멀리 갑니다.</p>
+          </div>
+        </li>
+        <li class="scene">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">23:00</span>
+            <span class="scene-tag">불꽃</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">강 위 불꽃놀이</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">매일 밤 7분. 강 중앙에서 올라온 불꽃이 밤하늘의 별과 겹쳐 보입니다.</p>
+          </div>
+        </li>
+        <li class="scene scene-last">
+          <div class="scene-time" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" data-aos-easing="ease-out-cubic" data-aos-once="true">
+            <span class="scene-hour">24:00</span>
+            <span class="scene-tag">마감</span>
+          </div>
+          <div class="scene-body">
+            <h3 data-aos="fade-up" data-aos-duration="700" data-aos-delay="220" data-aos-easing="ease-out-cubic" data-aos-once="true">등불 끄기</h3>
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="340" data-aos-easing="ease-out-cubic" data-aos-once="true">자정이 되면 가장 먼저 켰던 등불부터 하나씩 꺼집니다. 시장은 조용히 잠듭니다.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 부스 -->
+    <section id="booth" class="booth" aria-labelledby="booth-title">
+      <header class="section-head">
+        <h2 id="booth-title" class="section-title">밤을 채우는 것들</h2>
+        <p class="section-sub">먹고, 보고, 만지고, 들을 수 있는 320개의 부스 중 몇 가지</p>
+      </header>
+
+      <div class="booth-grid">
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-food" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">음식</span>
+            <h3>숯불 꼬치 골목</h3>
+            <p>연탄불 위에서 직접 굽는 닭꼬치, 떡꼬치, 소시지. 매운 분말이 기본입니다.</p>
+          </div>
+        </article>
+
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-craft" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">공예</span>
+            <h3>한지 등불 공방</h3>
+            <p>도자기 같은 등불, 새 모양 풍등, 손글씨 초. 하나씩 직접 만들어 가져갑니다.</p>
+          </div>
+        </article>
+
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-stage" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">공연</span>
+            <h3>나비 무대</h3>
+            <p>야외 소극장. 매 시간 새로운 사람이 오릅니다. 발 밑에 깔毯을 깔고 앉습니다.</p>
+          </div>
+        </article>
+
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-tea" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">음료</span>
+            <h3>싸리 차 방</h3>
+            <p>가을 산에서 딴 싸리꽃으로 우린 차. 작은 질그릇에 담겨 나옵니다. 밤에 한 잔.</p>
+          </div>
+        </article>
+
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-game" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">놀이</span>
+            <h3>옛날 놀이터</h3>
+            <p>팽이치기, 제기차기, 투호. 손주와 할아버지가 같이 웃는 소리가 가장 큰 곳.</p>
+          </div>
+        </article>
+
+        <article class="booth-card">
+          <div class="booth-pic booth-pic-light" aria-hidden="true"></div>
+          <div class="booth-meta">
+            <span class="booth-cat">풍경</span>
+            <h3>등불 터널</h3>
+            <p>강변 느티나무 길 200m. 머리 위로 등불이 이어지는 가장 사진 많이 찍히는 길.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 방문 -->
+    <section id="visit" class="visit" aria-labelledby="visit-title">
+      <div class="visit-grid">
+        <div class="visit-text">
+          <h2 id="visit-title" class="section-title">오시는 길</h2>
+          <p>
+            한강 시민공원 내 야시장 광장. 지하철, 버스, 자전거 모두 편합니다.
+            자동차는 인근 주차장이 혼잡하니 대중교통을 권합니다.
+          </p>
+
+          <dl class="visit-list">
+            <div class="visit-row">
+              <dt>지하철</dt>
+              <dd>5호선 여의나루역 2번 출구, 도보 8분</dd>
+            </div>
+            <div class="visit-row">
+              <dt>버스</dt>
+              <dd>간선 150, 501 / 지선 5712, 5713 — 야시장입구 정류장</dd>
+            </div>
+            <div class="visit-row">
+              <dt>자전거</dt>
+              <dd>한강 자전거길 따라 접근, 입구 200대 규모 주차장</dd>
+            </div>
+            <div class="visit-row">
+              <dt>주차</dt>
+              <dd>여의나루 공영주차장 (300면), 축제 기간 만차 잦음</dd>
+            </div>
+          </dl>
+
+          <p class="visit-note">
+            비가 올 경우에도 등불은 켜집니다. 우산을 챙기세요.
+          </p>
+        </div>
+
+        <aside class="visit-map" aria-label="지도">
+          <div class="map-frame" aria-hidden="true">
+            <div class="map-river"></div>
+            <div class="map-bridge"></div>
+            <div class="map-marker">★</div>
+            <div class="map-grid" aria-hidden="true"></div>
+          </div>
+          <p class="map-caption">한강 시민공원 · 야시장 광장</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 클로징 -->
+    <section class="closing" aria-labelledby="closing-title">
+      <h2 id="closing-title" class="closing-title">밤이 깊을수록,<br />시장은 따뜻해진다</h2>
+      <p class="closing-sub">10월 18일부터 27일까지, 매일 저녁 6시에 밤이 열립니다.</p>
+      <a class="btn btn-primary btn-large" href="#top">축제 알림 받기</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <div>
+          <p class="footer-name">별빛야시장</p>
+          <p class="footer-tag">가을밤의 열흘</p>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <p class="footer-h">축제</p>
+          <a href="#about">소개</a>
+          <a href="#program">프로그램</a>
+          <a href="#booth">부스</a>
+        </div>
+        <div class="footer-col">
+          <p class="footer-h">참여</p>
+          <a href="#">부스 신청</a>
+          <a href="#">자원봉사</a>
+          <a href="#">공연 지원</a>
+        </div>
+        <div class="footer-col">
+          <p class="footer-h">문의</p>
+          <a href="#">02-0000-0000</a>
+          <a href="#">hello@starlight.fest</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <p class="footer-copy">© 별빛야시장 조직위원회 · 이 사이트는 데모입니다</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="festival.js"></script>
+</body>
+</html>

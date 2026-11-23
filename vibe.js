@@ -216,7 +216,18 @@
     state.selectedWorkId = workId;
     state.previewLoaded = false;
     state.reviewRating = 0;
-    renderDetailPanel(w);
+    // 단일 작품 조회로 html_content 여부 확인
+    let fullWork = w;
+    try {
+      const { work } = await api(`/api/works/${workId}`);
+      if (work) fullWork = { ...w, ...work };
+      // works 배열에도 업데이트
+      const idx = state.works.findIndex((x) => x.id === workId);
+      if (idx >= 0) state.works[idx] = fullWork;
+    } catch (e) {
+      console.error("단일 작품 로드 실패:", e);
+    }
+    renderDetailPanel(fullWork);
     $$(".work-card").forEach((c) => c.classList.toggle("is-active", c.dataset.id === workId));
     if (window.innerWidth < 900) {
       $("#detail-panel").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -237,8 +248,12 @@
     const siteUrl = validUrl(w.site_url);
     const githubUrl = validUrl(w.github_url);
     const thumb = validUrl(w.thumbnail_url);
+    const htmlContent = w.html_content;
+    const htmlPreviewUrl = htmlContent ? `${API_BASE}/api/works/${w.id}/preview-html` : "";
+    const previewSrc = siteUrl || htmlPreviewUrl;
+    const previewType = siteUrl ? "url" : (htmlPreviewUrl ? "html" : "");
 
-    const stage = siteUrl
+    const stage = previewSrc
       ? `<div class="detail-stage" id="detail-stage">
            <div class="stage-toolbar">
              <button class="stage-fullscreen-btn" id="open-fullscreen" type="button" aria-label="전체 화면으로 보기" title="전체 화면으로 보기">
@@ -251,22 +266,24 @@
                 : `<div class="work-thumb-fallback">${escapeHtml((w.title || "?").slice(0,1).toUpperCase())}</div>`}
              <button class="detail-stage-play" id="preview-play" type="button" aria-label="사이트 미리보기">
                <span class="play-circle" aria-hidden="true">▶</span>
-               <span class="play-label">사이트 미리보기</span>
+               <span class="play-label">${previewType === "html" ? "HTML 미리보기" : "사이트 미리보기"}</span>
              </button>
            </div>
          </div>
-         <p class="stage-note">일부 사이트는 보안 설정으로 미리보기가 표시되지 않을 수 있습니다. 그럴 땐 전체 화면이나 아래 버튼으로 새 창에서 열어 보세요.</p>`
+         <p class="stage-note">${previewType === "html" ? "첨부된 HTML 파일을 미리보기로 표시합니다." : "일부 사이트는 보안 설정으로 미리보기가 표시되지 않을 수 있습니다. 그럴 땐 전체 화면이나 아래 버튼으로 새 창에서 열어 보세요."}</p>`
       : `<div class="detail-stage"><div class="work-thumb-fallback">${escapeHtml((w.title || "?").slice(0,1).toUpperCase())}</div></div>
-         <p class="stage-note">이 작품은 사이트 주소가 등록되지 않았습니다.</p>`;
+         <p class="stage-note">이 작품은 사이트 주소나 HTML 파일이 등록되지 않았습니다.</p>`;
 
     const links = `<div class="detail-links">
            ${siteUrl ? `<a class="btn-accent" href="${escapeHtml(siteUrl)}" target="_blank" rel="noopener noreferrer">사이트 새 창에서 보기 ↗</a>` : ""}
+           ${htmlPreviewUrl ? `<a class="btn-accent" href="${escapeHtml(htmlPreviewUrl)}" target="_blank" rel="noopener noreferrer">HTML 새 창에서 보기 ↗</a>` : ""}
            ${githubUrl ? `<a class="btn-ghost btn-dark" href="${escapeHtml(githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub 코드 보기 ↗</a>` : ""}
            <button class="btn-ghost btn-dark detail-edit-btn" id="open-edit" type="button">✎ 수정 / 삭제</button>
          </div>`;
 
-    state.currentSiteUrl = siteUrl;
+    state.currentSiteUrl = previewSrc;
     state.currentTitle = w.title;
+    state.currentPreviewType = previewType;
 
     panel.innerHTML = `
       <div class="detail-panel-inner">
@@ -320,14 +337,17 @@
         state.previewLoaded = true;
         const content = $("#stage-content");
         if (content) {
-          content.innerHTML = `<iframe src="${escapeHtml(siteUrl)}" title="${escapeHtml(w.title)} 사이트 미리보기" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
+          const sandbox = previewType === "html"
+            ? "allow-scripts allow-same-origin allow-popups allow-forms"
+            : "allow-scripts allow-same-origin allow-popups allow-forms";
+          content.innerHTML = `<iframe src="${escapeHtml(previewSrc)}" title="${escapeHtml(w.title)} 미리보기" loading="lazy" sandbox="${sandbox}"></iframe>`;
         }
       });
     }
 
     const fsBtn = $("#open-fullscreen");
     if (fsBtn) {
-      fsBtn.addEventListener("click", () => openFullscreen(siteUrl, w.title));
+      fsBtn.addEventListener("click", () => openFullscreen(previewSrc, w.title, previewType));
     }
 
     const editBtn = $("#open-edit");
@@ -444,6 +464,7 @@
       category: String(fd.get("category") || "").trim(),
       thumbnail_url: String(fd.get("thumbnail_url") || "").trim() || null,
       password: String(fd.get("password") || "").trim(),
+      html_content: null,
     };
 
     const status = $("#submit-status");
@@ -458,6 +479,15 @@
     if (status) { status.textContent = "등록 중…"; status.className = "form-status"; }
 
     try {
+      // HTML 파일이 있으면 읽어서 html_content로 전송
+      const htmlFile = fd.get("html_file");
+      if (htmlFile && htmlFile.size > 0) {
+        if (htmlFile.size > 1_000_000) {
+          throw new Error("HTML 파일이 1MB를 초과합니다.");
+        }
+        data.html_content = await htmlFile.text();
+      }
+
       await api("/api/works", { method: "POST", body: JSON.stringify(data) });
       form.reset();
       if (status) { status.textContent = ""; status.className = "form-status"; }
@@ -553,6 +583,7 @@
         category: String(fd.get("category") || "").trim(),
         thumbnail_url: String(fd.get("thumbnail_url") || "").trim() || null,
         password,
+        html_content: null,
       };
 
       const status = $("#edit-status");
@@ -566,6 +597,13 @@
       if (status) { status.textContent = "저장 중…"; status.className = "form-status"; }
 
       try {
+        // HTML 파일이 있으면 읽어서 전송
+        const htmlFile = fd.get("html_file");
+        if (htmlFile && htmlFile.size > 0) {
+          if (htmlFile.size > 1_000_000) throw new Error("HTML 파일이 1MB를 초과합니다.");
+          data.html_content = await htmlFile.text();
+        }
+
         await api(`/api/works/${work.id}`, { method: "PUT", body: JSON.stringify(data) });
         if (status) { status.textContent = ""; status.className = "form-status"; }
         showToast("작품이 수정되었습니다.");
@@ -637,14 +675,15 @@
   }
 
   // ===== 전체 화면 사이트 미리보기 =====
-  function openFullscreen(siteUrl, title) {
-    if (!siteUrl) return;
+  function openFullscreen(previewSrc, title, previewType) {
+    if (!previewSrc) return;
     const fs = $("#stage-fullscreen");
-    $("#stage-fullscreen-title").textContent = title || "사이트 미리보기";
+    $("#stage-fullscreen-title").textContent = title || "미리보기";
     const openLink = $("#stage-fullscreen-open");
-    if (openLink) openLink.href = siteUrl;
+    if (openLink) openLink.href = previewSrc;
     const frame = $("#stage-fullscreen-frame");
-    frame.innerHTML = `<iframe src="${escapeHtml(siteUrl)}" title="${escapeHtml(title || "")} 전체 화면 미리보기" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
+    const sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
+    frame.innerHTML = `<iframe src="${escapeHtml(previewSrc)}" title="${escapeHtml(title || "")} 전체 화면 미리보기" loading="lazy" sandbox="${sandbox}"></iframe>`;
     fs.hidden = false;
     document.body.style.overflow = "hidden";
     const closeBtn = $("#stage-fullscreen-close");
